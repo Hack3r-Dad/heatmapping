@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fulcrum — Elastic SecArch briefing</title>
+<style>
+  :root{
+    --bg:#F7F8F9; --card:#FFFFFF; --line:#E2E6EA; --ink:#16191D;
+    --mid:#525C68; --dim:#8792A0; --hot:#CF2E22;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .pg{max-width:760px;margin:0 auto;padding:48px 26px 80px}
+
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;padding-bottom:18px;border-bottom:2px solid var(--ink)}
+  .wm{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.3em}
+  .meta{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:right;line-height:1.9}
+
+  h2{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);font-weight:500;margin:52px 0 16px}
+  h2:first-of-type{margin-top:40px}
+  p{margin:0 0 16px}
+  p:last-child{margin-bottom:0}
+  .lead{font-size:20px;line-height:1.55;margin:26px 0 0;color:var(--ink)}
+  .lead b{color:var(--hot);font-weight:600}
+
+  /* numbers */
+  .nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(122px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+  .nums div{background:var(--card);padding:15px 16px}
+  .nums .n{font-family:var(--mono);font-size:31px;font-weight:700;letter-spacing:-.04em;line-height:1}
+  .nums .n small{font-size:13px;font-weight:400;color:var(--dim);letter-spacing:0}
+  .nums .l{font-size:12.5px;color:var(--mid);margin-top:6px;line-height:1.4}
+
+  /* Q&A */
+  .qa{border-top:1px solid var(--line)}
+  .qa div{display:grid;grid-template-columns:1fr 1.05fr;gap:18px;padding:11px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  .qa .q{color:var(--mid);font-size:15px;line-height:1.45}
+  .qa .a{font-weight:600;font-size:15px;line-height:1.45}
+  .qa .a.up{color:var(--hot)}
+  .qa .a.down{color:var(--dim);font-weight:500}
+  @media(max-width:620px){.qa div{grid-template-columns:1fr;gap:2px}}
+
+  /* say-this blocks */
+  .say{border-left:3px solid var(--hot);padding:3px 0 3px 20px;margin:0 0 26px}
+  .say .h{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:7px}
+  .say p{font-size:17px;line-height:1.6}
+
+  /* ranked list */
+  ol.five{list-style:none;counter-reset:f;margin:0;padding:0;border-top:1px solid var(--line)}
+  ol.five li{counter-increment:f;display:grid;grid-template-columns:26px 1fr auto;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  ol.five li::before{content:counter(f);font-family:var(--mono);font-size:16px;font-weight:700;color:var(--dim)}
+  ol.five .t{font-weight:600;font-size:16.5px;line-height:1.35}
+  ol.five .d{color:var(--mid);font-size:14.5px;line-height:1.5;margin-top:3px}
+  ol.five .w{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap;text-align:right;line-height:1.6}
+  ol.five .w b{color:var(--hot);font-weight:700;display:block;font-size:13px}
+
+  /* waves */
+  .waves{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .waves div{background:var(--card);padding:13px 14px}
+  .waves .c{font-family:var(--mono);font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1}
+  .waves .k{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+  .waves .s{font-size:12px;color:var(--mid);margin-top:5px;line-height:1.4}
+  @media(max-width:620px){.waves{grid-template-columns:repeat(2,1fr)}}
+
+  /* if they ask */
+  dl{margin:0;border-top:1px solid var(--line)}
+  dt{font-weight:600;font-size:15.5px;padding-top:13px}
+  dd{margin:4px 0 13px;color:var(--mid);font-size:15.5px;line-height:1.55;border-bottom:1px solid var(--line);padding-bottom:13px}
+  dd:last-of-type{border-bottom:none}
+
+  .ask{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--ink);padding:16px 18px;margin-top:8px}
+  .ask .k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+  .ask .fill{color:var(--dim);font-style:italic}
+
+  footer{margin:56px 0 0;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+  @media print{
+    @page{margin:15mm}
+    body{background:#fff;font-size:11pt}
+    .pg{padding:0;max-width:100%}
+    h2{margin:22px 0 10px;page-break-after:avoid}
+    .say,ol.five li,.nums,.waves,dd{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="pg">
+
+<header>
+  <div class="wm">FULCRUM</div>
+  <div class="meta">Elastic, SecArch &middot; all assets<br>28 July 2026 &middot; frontier rev 2026-07-27</div>
+</header>
+
+<p class="lead">
+  We scored all 32 capabilities against where leading practice actually stands today.
+  We're <b>61 stages behind</b> that line, and at it on exactly one thing.
+  Most of our estate sits at "we know about it" rather than "it's enforced."
+</p>
+
+<h2>The numbers</h2>
+<div class="nums">
+  <div><div class="n">32<small>/32</small></div><div class="l">Scored. Nothing skipped.</div></div>
+  <div><div class="n">61</div><div class="l">Stages behind the frontier</div></div>
+  <div><div class="n">1<small>/32</small></div><div class="l">At the line today</div></div>
+  <div><div class="n">13</div><div class="l">Widest track: agent control</div></div>
+</div>
+
+<h2>What we told it about ourselves</h2>
+<div class="qa">
+  <div><div class="q">What can agents do in production?</div><div class="a up">Write to customer-facing systems</div></div>
+  <div><div class="q">Do agents read content we don't control?</div><div class="a up">Yes — they browse the live web autonomously</div></div>
+  <div><div class="q">What does retrieval run over?</div><div class="a up">Sensitive internal data</div></div>
+  <div><div class="q">Do agents keep memory between sessions?</div><div class="a">Per-user memory</div></div>
+  <div><div class="q">Where do our models come from?</div><div class="a down">Hosted provider APIs only</div></div>
+  <div><div class="q">Do agents delegate to other agents?</div><div class="a">Internal multi-agent orchestration</div></div>
+  <div><div class="q">How are coding agents used?</div><div class="a up">In CI/CD, with repository write access</div></div>
+  <div><div class="q">Third-party MCP servers?</div><div class="a up">Teams add them as they like</div></div>
+  <div><div class="q">Who is exposed to these systems?</div><div class="a up">Customers interact with them</div></div>
+  <div><div class="q">Regulatory exposure?</div><div class="a up">EU market — GDPR and AI Act in scope</div></div>
+  <div><div class="q">What capacity is behind this?</div><div class="a">A funded team</div></div>
+</div>
+
+<h2>What that means — say this</h2>
+
+<div class="say">
+  <div class="h">On the ranking being ours, not generic</div>
+  <p>Three answers do most of the work. Our agents browse the live web, our coding agents have
+  write access in CI, and teams add third-party MCP servers freely. Those three pushed five
+  capabilities to the top of the scale — supply chain, sandboxing, instruction-channel defence,
+  third-party assessment and coding agents in the SDLC all weight roughly double.</p>
+</div>
+
+<div class="say">
+  <div class="h">On the headline number</div>
+  <p>Sixty-one is a distance, not a grade. There's no benchmark behind it — it measures us against
+  current practice, not against peers. It answers what to do first, not how bad we are.</p>
+</div>
+
+<div class="say">
+  <div class="h">On where it's worst</div>
+  <p>Agent control and programme governance are tied at thirteen stages each. Agent control is the
+  one I'd lead with, because it's also where our exposure is highest — the gap and the amplification
+  land in the same place.</p>
+</div>
+
+<div class="say">
+  <div class="h">On the one thing that unlocks the rest</div>
+  <p>Agent and MCP inventory ranks fifth on its own merits. Structurally, twelve of our thirty-one
+  open items are waiting behind it — including the two with the highest exposure in the estate.
+  If we fund one thing this quarter, that's the one that moves everything else.</p>
+</div>
+
+<div class="say">
+  <div class="h">On prompt injection, if it comes up</div>
+  <p>Instruction-channel defence has no top stage — deliberately. Data and instructions share one
+  channel; that's architecture, not a bug waiting for a patch. We contain it downstream by limiting
+  what agents can reach. We don't close it, and nobody else does either.</p>
+</div>
+
+<div class="say">
+  <div class="h">On the one thing we've reached</div>
+  <p>Runtime telemetry is our only capability at the frontier, and that's less impressive than it
+  sounds. The ceiling there is stage three because the OpenTelemetry conventions are still moving.
+  We're at the top of a low ceiling, not ahead of the field.</p>
+</div>
+
+<h2>Where the next quarter goes</h2>
+<ol class="five">
+  <li><div><div class="t">Retrieval boundary &amp; tenancy</div>
+    <div class="d">Agents searching our documents can reach more than the person asking is allowed to see.</div></div>
+    <div class="w"><b>&minus;3</b>Data platform<br>~a quarter</div></li>
+  <li><div><div class="t">Output &amp; egress control</div>
+    <div class="d">Nothing constrains where an agent can send what it produces.</div></div>
+    <div class="w"><b>&minus;2</b>App engineering<br>~a quarter</div></li>
+  <li><div><div class="t">Agent execution sandboxing</div>
+    <div class="d">Agent-written code runs without hardened isolation — in an estate where agents browse the live web.</div></div>
+    <div class="w"><b>&minus;2</b>Infrastructure<br>&gt; a quarter</div></li>
+  <li><div><div class="t">Instruction-channel defence</div>
+    <div class="d">Agents read hostile text daily. Contained, never closed.</div></div>
+    <div class="w"><b>&minus;2</b>Security arch<br>&gt; a quarter</div></li>
+  <li><div><div class="t">Agent &amp; MCP server inventory</div>
+    <div class="d">Fifth on merit. Twelve other capabilities are queued behind it. Also the only item with a date on it.</div></div>
+    <div class="w"><b>&minus;2</b>Platform eng<br>~a quarter</div></li>
+</ol>
+
+<h2>The sequence</h2>
+<div class="waves">
+  <div><div class="k">Wave 1</div><div class="c">18</div><div class="s">Nothing blocks these. Start now.</div></div>
+  <div><div class="k">Wave 2</div><div class="c">6</div><div class="s">All waiting on inventory.</div></div>
+  <div><div class="k">Wave 3</div><div class="c">6</div><div class="s">Waiting on identity and the gateway.</div></div>
+  <div><div class="k">Wave 4</div><div class="c">1</div><div class="s">Irreversible action gating, last.</div></div>
+</div>
+
+<h2>If they ask</h2>
+<dl>
+  <dt>How did you get these numbers?</dt>
+  <dd>Each capability scored against where practice actually stands today, weighted by how much our
+    deployment makes it matter, divided by effort. Every input is visible — you can argue with any of them.</dd>
+
+  <dt>Is this benchmarked against other companies?</dt>
+  <dd>No. It's relative to us. Two organisations with the same answers would get the same numbers, but
+    a score of six isn't a risk level and doesn't compare across firms.</dd>
+
+  <dt>Why is something ranked above something else?</dt>
+  <dd>Bigger gap, or it keeps working when other controls fail, or our specific setup amplifies it.
+    Usually all three.</dd>
+
+  <dt>Two rows look near-zero — why score them?</dt>
+  <dd>Training data lineage and inference infrastructure barely apply because we're on hosted APIs only.
+    I'd mark both not-applicable, which takes four phantom stages off the sixty-one.</dd>
+
+  <dt>When do we look at this again?</dt>
+  <dd>28 October. Several rows are tied to spec and convention changes that move quarterly — the MCP
+    specification and the OpenTelemetry conventions in particular.</dd>
+</dl>
+
+<div class="ask">
+  <div class="k">The ask</div>
+  <div class="fill">— fill this in before the meeting —</div>
+</div>
+
+<footer>
+  <span>Fulcrum &middot; SecArch briefing</span>
+  <span>Re-score 28 Oct 2026</span>
+  <span>&copy; Cache Labs, LLC</span>
+</footer>
+
+</div>
+</body>
+</html>
